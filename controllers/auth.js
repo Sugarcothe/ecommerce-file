@@ -43,7 +43,7 @@ exports.signin = (req, res) => {
     // persist the token as "t" in cookie with expiry date
     res.cookie('t', token, {expire: new Date() + 9999})
     // return response with user and token to frontend client
-    const {_id, name, email, role} = user;
+    const { _id, name, email, role } = user;
     return res.json({token, user: {_id, email, name, role}})
   }) 
   
@@ -61,3 +61,25 @@ exports.requireSignin = expressJwt({
   algorithms: ["HS256"], // added later
   userProperty: "auth",
 });
+
+// ex
+exports.isAuth = (req, res, next) => {
+  let user =- req.profile && req.auth & req.profile._id == req.auth._id
+
+  if(!user) {
+    return res.status(403).json({
+      error: 'Access denied'
+    })
+  }
+}
+
+// ADMIN SIGN IN 
+
+exports.isAdmin = (req, res, next) => {
+  if(req.profile.role === 0) {
+    return res.status(403).json ({
+      error: 'Admin resourse! Access denied'
+    })
+  }
+  next()
+}
